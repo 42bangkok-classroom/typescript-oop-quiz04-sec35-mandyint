@@ -1,21 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { IUser } from './user.interface';
 import * as fs from 'fs';
+
 @Injectable()
 export class UserService {
-  private file = 'data/users.json';
+  private filePath = 'data/users.json';
 
   test() {
     return [];
   }
 
   findAll(): IUser[] {
-    const data = fs.readFileSync(this.file, 'utf-8');
-    return JSON.parse(data);
+    const data = fs.readFileSync(this.filePath, 'utf-8');
+
+    const users = JSON.parse(data) as IUser[];
+
+    return users;
   }
 
   findOne(id: string, fields?: string[]) {
     const users = this.findAll();
+
     const user = users.find((u) => u.id === id);
 
     if (!user) {
@@ -26,11 +31,11 @@ export class UserService {
       return user;
     }
 
-    const filteredUser = {};
+    const filteredUser: Partial<IUser> = {};
 
     fields.forEach((field) => {
-      if (user[field] !== undefined) {
-        filteredUser[field] = user[field];
+      if (user[field as keyof IUser] !== undefined) {
+        filteredUser[field as keyof IUser] = user[field as keyof IUser];
       }
     });
 
