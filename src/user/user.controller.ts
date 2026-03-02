@@ -9,4 +9,7 @@ export class UserController {
   getTest() {
     return this.userService.test();
   }
+
+  @Get('users')
+  get;
 }
